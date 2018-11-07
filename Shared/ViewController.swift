@@ -101,27 +101,27 @@ class ViewController: NSUIViewController, MTKViewDelegate {
     func handleInteraction(at point: CGPoint) {
         guard let cameraNode = pointOfView, let camera = cameraNode.camera else { return }
         
-        let viewport = mtkView.bounds // Assume viewport matches view; if not, apply different inverse viewport xform
+        let viewport = mtkView.bounds // Assume viewport matches window; if not, apply additional inverse viewport xform
         let width = Float(viewport.size.width)
         let height = Float(viewport.size.height)
         let aspectRatio = width / height
         
         let projectionMatrix = camera.projectionMatrix(aspectRatio: aspectRatio)
-        let inverseProjectionMatrix = simd_inverse(projectionMatrix)
+        let inverseProjectionMatrix = projectionMatrix.inverse
 
         let viewMatrix = cameraNode.worldTransform.inverse
-        let inverseViewMatrix = simd_inverse(viewMatrix)
+        let inverseViewMatrix = viewMatrix.inverse
 
-        let ndcX = (2 * Float(point.x)) / width - 1
-        let ndcY = 1 - (2 * Float(point.y)) / height
-        let ndc = float4(ndcX, ndcY, 0, 1) // Assume clip space is hemicube, -Z is into the screen
+        let clipX = (2 * Float(point.x)) / width - 1
+        let clipY = 1 - (2 * Float(point.y)) / height
+        let clipCoords = float4(clipX, clipY, 0, 1) // Assume clip space is hemicube, -Z is into the screen
 
-        var eyeRayDir = inverseProjectionMatrix * ndc
+        var eyeRayDir = inverseProjectionMatrix * clipCoords
         eyeRayDir.z = -1
         eyeRayDir.w = 0
 
         var worldRayDir = (inverseViewMatrix * eyeRayDir).xyz
-        worldRayDir = simd_normalize(worldRayDir)
+        worldRayDir = normalize(worldRayDir)
 
         let eyeRayOrigin = float4(x: 0, y: 0, z: 0, w: 1)
         let worldRayOrigin = (inverseViewMatrix * eyeRayOrigin).xyz
@@ -169,7 +169,7 @@ class ViewController: NSUIViewController, MTKViewDelegate {
 extension ViewController {
     override func mouseDown(with event: NSEvent) {
         var location = view.convert(event.locationInWindow, from: nil)
-        location.y = view.bounds.height - location.y
+        location.y = view.bounds.height - location.y // Flip from AppKit default window coordinates to Metal viewport coordinates
         handleInteraction(at: location)
     }
 }

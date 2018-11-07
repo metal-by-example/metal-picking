@@ -53,7 +53,7 @@ class Node: Equatable, CustomDebugStringConvertible {
     }
     
     func hitTest(_ ray: Ray) -> HitResult? {
-        let localRay = simd_inverse(transform) * ray
+        let localRay = transform.inverse * ray
         
         var nearest: HitResult?
         if let parameter = boundingSphere.intersect(localRay) {
