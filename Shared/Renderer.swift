@@ -124,7 +124,7 @@ class Renderer {
                 renderCommandEncoder.setVertexBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: index)
             }
             
-            for (_, submesh) in mesh.submeshes.enumerated() {
+            for submesh in mesh.submeshes {
                 let fillMode: MTLTriangleFillMode = node.material.highlighted ? .lines : .fill
                 renderCommandEncoder.setTriangleFillMode(fillMode)
                 renderCommandEncoder.drawIndexedPrimitives(type: submesh.primitiveType,
