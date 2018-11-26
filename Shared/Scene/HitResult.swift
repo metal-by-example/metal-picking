@@ -6,13 +6,11 @@ struct HitResult {
     var ray: Ray
     var parameter: Float
     
-    var intersectionPoint: float3 {
-        return ray.origin + parameter * ray.direction
+    var intersectionPoint: float4 {
+        return float4(ray.origin + parameter * ray.direction, 1)
     }
     
-    // Test whether one result is closer than another.
-    // Only results originating from the same ray can be compared.
-    static func < (lhs: HitResult, rhs: HitResult) -> Bool {
+    static func < (_ lhs: HitResult, _ rhs: HitResult) -> Bool {
         return lhs.parameter < rhs.parameter
     }
 }

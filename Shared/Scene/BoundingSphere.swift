@@ -6,7 +6,7 @@ struct BoundingSphere {
     var radius: Float
     
     // https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection
-    func intersect(_ ray: Ray) -> Float? {
+    func intersect(_ ray: Ray) -> float4? {
         var t0, t1: Float
         let radius2 = radius * radius
         if (radius2 == 0) { return nil }
@@ -26,6 +26,6 @@ struct BoundingSphere {
             if t0 < 0 { return nil }
         }
         
-        return t0
+        return float4(ray.origin + ray.direction * t0, 1)
     }
 }

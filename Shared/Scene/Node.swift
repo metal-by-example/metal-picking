@@ -53,16 +53,19 @@ class Node: Equatable, CustomDebugStringConvertible {
     }
     
     func hitTest(_ ray: Ray) -> HitResult? {
-        let localRay = transform.inverse * ray
+        let modelToWorld = worldTransform
+        let localRay = modelToWorld.inverse * ray
         
         var nearest: HitResult?
-        if let parameter = boundingSphere.intersect(localRay) {
-            nearest = HitResult(node: self, ray: ray, parameter: parameter)
+        if let modelPoint = boundingSphere.intersect(localRay) {
+            let worldPoint = modelToWorld * modelPoint
+            let worldParameter = ray.interpolate(worldPoint)
+            nearest = HitResult(node: self, ray: ray, parameter: worldParameter)
         }
         
         var nearestChildHit: HitResult?
         for child in children {
-            if let childHit = child.hitTest(localRay) {
+            if let childHit = child.hitTest(ray) {
                 if let nearestActualChildHit = nearestChildHit {
                     if childHit < nearestActualChildHit {
                         nearestChildHit = childHit
