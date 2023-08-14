@@ -81,7 +81,8 @@ class Renderer {
         
         renderCommandEncoder.setRenderPipelineState(renderPipelineState)
         renderCommandEncoder.setDepthStencilState(depthStencilState)
-        
+        renderCommandEncoder.setFrontFacing(.counterClockwise)
+
         let viewMatrix = cameraNode.worldTransform.inverse
 
         let viewport = view.bounds

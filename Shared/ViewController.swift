@@ -132,7 +132,6 @@ class ViewController: NSUIViewController, MTKViewDelegate {
             print("Hit \(hit.node) at \(hit.intersectionPoint)")
         }
     }
-    
 
     func draw(in view: MTKView) {
         frameSemaphore.wait()
